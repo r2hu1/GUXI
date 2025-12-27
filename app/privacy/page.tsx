@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
         <h1>Privacy Policy – GUXI</h1>
 
         <p className="text-sm text-muted-foreground">
-          Last updated: {new Date().toLocaleDateString()}
+          Last updated: 27/12/2025
         </p>
 
         <p>
