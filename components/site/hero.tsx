@@ -26,7 +26,13 @@ export default function Hero() {
         </div>
       </div>
       <div className="bg-border p-2 rounded-md !mt-28 max-w-5xl md:mx-auto">
-        <img src="/flow.png" className="rounded-sm" />
+        <video
+          src="/demo.mov"
+          controls
+          loop
+          autoPlay={true}
+          className="rounded-sm"
+        ></video>
       </div>
     </section>
   );
