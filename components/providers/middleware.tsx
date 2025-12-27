@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "@/lib/auth/client";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Middleware({
@@ -10,20 +10,23 @@ export default function Middleware({
   children: React.ReactNode;
 }) {
   const { isPending, data, error } = useSession();
+  const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isPending && !data && !error) {
-      redirect("/~/auth");
-    }
-    if (!isPending && data && !error) {
-      if (pathname.includes("/auth")) {
-        redirect("/dashboard");
+    if (isPending) return;
+
+    if (!data && !error) {
+      if (!pathname.startsWith("/~/auth")) {
+        router.replace("/~/auth");
       }
-      if (pathname.includes("/dashboard")) {
-        return;
-      }
+      return;
     }
-  }, [isPending, data, error]);
+
+    if (data && pathname.startsWith("/~/auth")) {
+      router.replace("/dashboard");
+    }
+  }, [isPending, data, error, pathname, router]);
+
   return children;
 }
