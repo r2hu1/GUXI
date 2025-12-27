@@ -5,9 +5,8 @@ import { authClient } from "@/lib/auth/client";
 
 export default function AuthPage() {
   const signIn = async () => {
-    const data = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "github",
-      scopes: ["read:user", "user:email", "repo"],
       callbackURL: "/install-app",
     });
   };

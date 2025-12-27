@@ -1,12 +1,12 @@
-import { GitHubProvider } from "@/components/providers/github";
+import { Integrations } from "@/components/providers/integrations";
 import Middleware from "@/components/providers/middleware";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Middleware>
-      <GitHubProvider>
+      <Integrations>
         <main>{children}</main>
-      </GitHubProvider>
+      </Integrations>
     </Middleware>
   );
 }
