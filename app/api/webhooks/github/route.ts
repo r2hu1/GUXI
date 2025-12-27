@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 
+export async function GET() {
+  console.log("TEST ROUTE HIT");
+  return NextResponse.json({ ok: true });
+}
+
 export async function POST(req: Request) {
   const event = req.headers.get("x-github-event");
   const body = await req.json();
