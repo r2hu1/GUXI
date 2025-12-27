@@ -9,6 +9,8 @@ import { postTweet } from "@/lib/x/init";
 export async function POST(req: Request) {
   const event = req.headers.get("x-github-event");
   const body = await req.json();
+  console.log("BODYYYY", body);
+  console.log("EVENTTTTT", event);
 
   const installationId = body.installation?.id;
 
@@ -56,6 +58,33 @@ export async function POST(req: Request) {
       const generatedTweet = await generateTweet(neededDetails, 280);
       await postTweet(installation.userId, generatedTweet);
     }
+  }
+  if (event === "repository" && body.action === "publicized") {
+    const repo = body.repository;
+
+    if (repo.private) {
+      return NextResponse.json({ ignored: true });
+    }
+
+    const repoDetails = await getRepoDetails(
+      installation.installationId,
+      repo.full_name,
+    );
+
+    const neededDetails = {
+      name: repoDetails.name,
+      fullName: repoDetails.full_name,
+      description: repoDetails.description ?? "",
+      topics: repoDetails.topics ?? [],
+      language: repoDetails.language ?? "",
+      stars: repoDetails.stargazers_count ?? 0,
+      forks: repoDetails.forks_count ?? 0,
+      url: repoDetails.html_url ?? "",
+      owner: repoDetails.owner?.login ?? "",
+    };
+
+    const generatedTweet = await generateTweet(neededDetails, 280);
+    await postTweet(installation.userId, generatedTweet);
   }
 
   return NextResponse.json({ ok: true });
