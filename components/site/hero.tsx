@@ -48,7 +48,6 @@ export default function Hero() {
           ref={videoRef}
           src="/demo.mov"
           loop
-          autoPlay={true}
           className="rounded-sm"
         ></video>
         <Button
