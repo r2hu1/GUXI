@@ -40,7 +40,7 @@ Follow these instructions to get a local copy up and running for development and
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/guxi.git
+    git clone https://github.com/r2hu1/guxi.git
     cd guxi
     ```
 
