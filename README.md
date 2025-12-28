@@ -4,6 +4,7 @@ Guxi is an application that automatically announces your new public GitHub repos
 
 ![Guxi Flow](public/flow.png)
 
+<video controls src="https://raw.githubusercontent.com/r2hu1/guxi/public/demo.mov"></video>
 
 ## How it Works
 
