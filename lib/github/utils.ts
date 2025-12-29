@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import crypto from "crypto";
 
 function createGitHubAppJWT() {
   const now = Math.floor(Date.now() / 1000);
@@ -49,4 +50,13 @@ export async function getRepoDetails(installationId: string, fullName: string) {
   }
 
   return res.json();
+}
+export function verifyGitHubSignature(
+  payload: string,
+  signature: string,
+): boolean {
+  const secret = process.env.GITHUB_WEBHOOK_SECRET!;
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = "sha256=" + hmac.update(payload).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
 }

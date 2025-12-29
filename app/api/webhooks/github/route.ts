@@ -2,13 +2,17 @@ import { db } from "@/db/client";
 import { githubInstallations } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import { getRepoDetails } from "@/lib/github/utils";
+import { getRepoDetails, verifyGitHubSignature } from "@/lib/github/utils";
 import { generateTweet } from "@/lib/ai/openrouter";
 import { postTweet } from "@/lib/x/init";
 
 export async function POST(req: Request) {
+  const signature = req.headers.get("x-hub-signature-256");
   const event = req.headers.get("x-github-event");
   const body = await req.json();
+  if (!signature || !verifyGitHubSignature(body, signature)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+  }
 
   const installationId = body.installation?.id;
 
