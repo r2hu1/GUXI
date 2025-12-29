@@ -55,8 +55,13 @@ export function verifyGitHubSignature(
   payload: string,
   signature: string,
 ): boolean {
-  const secret = process.env.GITHUB_WEBHOOK_SECRET!;
+  const secret = process.env.GITHUB_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error("GITHUB_WEBHOOK_SECRET not configured");
+  }
+
   const hmac = crypto.createHmac("sha256", secret);
   const digest = "sha256=" + hmac.update(payload).digest("hex");
+
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
 }

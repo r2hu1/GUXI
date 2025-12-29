@@ -9,13 +9,16 @@ import { postTweet } from "@/lib/x/init";
 export async function POST(req: Request) {
   const signature = req.headers.get("x-hub-signature-256");
   const event = req.headers.get("x-github-event");
-  const body = await req.json();
-  if (!signature || !verifyGitHubSignature(body, signature)) {
+
+  const rawBody = await req.text();
+
+  if (!signature || !verifyGitHubSignature(rawBody, signature)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const installationId = body.installation?.id;
+  const body = JSON.parse(rawBody);
 
+  const installationId = body.installation?.id;
   if (!installationId) {
     return NextResponse.json({ ignored: true });
   }
@@ -40,7 +43,6 @@ export async function POST(req: Request) {
   if (event === "installation_repositories" && body.action === "added") {
     for (const repo of body.repositories_added ?? []) {
       if (repo.private) continue;
-
       const repoDetails = await getRepoDetails(
         installation.installationId,
         repo.full_name,
@@ -56,23 +58,20 @@ export async function POST(req: Request) {
         url: repoDetails.html_url ?? "",
         owner: repoDetails.owner?.login ?? "",
       };
-
       const generatedTweet = await generateTweet(neededDetails, 280);
       await postTweet(installation.userId, generatedTweet);
     }
   }
+
   if (event === "repository" && body.action === "publicized") {
     const repo = body.repository;
-
     if (repo.private) {
       return NextResponse.json({ ignored: true });
     }
-
     const repoDetails = await getRepoDetails(
       installation.installationId,
       repo.full_name,
     );
-
     const neededDetails = {
       name: repoDetails.name,
       fullName: repoDetails.full_name,
@@ -84,7 +83,6 @@ export async function POST(req: Request) {
       url: repoDetails.html_url ?? "",
       owner: repoDetails.owner?.login ?? "",
     };
-
     const generatedTweet = await generateTweet(neededDetails, 280);
     await postTweet(installation.userId, generatedTweet);
   }
